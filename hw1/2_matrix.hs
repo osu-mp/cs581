@@ -3,9 +3,12 @@ type Column = [Int]
 type Matrix = [Row]
 
 -- 2.a Vector Addition
+
+
 vAdd :: Row -> Row -> Row
 vAdd [] [] = []
 vAdd (x:xs) (y:ys) = x + y : vAdd xs ys
+
 
 vAddZipWith :: Row -> Row -> Row
 vAddZipWith x y = zipWith (+) x y
@@ -30,6 +33,10 @@ oProd (c:cs) ys = map (\x -> c * x ) ys : oProd cs ys
 mSize :: Matrix -> (Int, Int)
 mSize [] = (0,0)
 mSize (x:xs) = let (r, c) = mSize xs in (r + 1, foldl (\acc x -> acc + 1) 0 x)
+
+
+
+
 
 main :: IO ()
 main = do
@@ -75,5 +82,5 @@ main = do
     print("Size of outer product: ", s34)
     print("Outer product: ", vO43)
     print("Size of outer product: ", s43)
- 
     putStrLn "\nDONE"
+
