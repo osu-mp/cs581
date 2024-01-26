@@ -1,3 +1,5 @@
+module Hw1_group2 where
+
 ---------------------------------------------------------------------------------------------------
 -- Question 1 - Lists
 
@@ -8,41 +10,44 @@ type Bag a = [(a,Int)]
 -- (a) Define the function ins that inserts an element into a multiset
 -- The class constraint ”Eq a =>” restricts the element type a to those types that allow the comparison of elements for equality with ==
 ins :: Eq a => a -> Bag a -> Bag a
-ins x [] = [(x, 1)]  -- If the bag is empty, add the new element with count 1
+ins x [] = [(x, 1)]  -- base case: empty bag; add the new element with count 1
 ins x ((y, count):ys)
-  | x == y    = (y, count + 1) : ys  -- If the element is found, increment the count
-  | otherwise = (y, count) : ins x ys  -- Otherwise, continue searching in the rest of the bag
+  | x == y    = (y, count + 1) : ys  -- item found, increment counter
+  | otherwise = (y, count) : ins x ys  -- else, keep searching until we find target elemtn
 
 
 -- (b) Define the function del that removes a single element from a multiset. Note that deleting 3 from {2, 3, 3, 4}
 -- yields {2, 3, 4} whereas deleting 3 from {2, 3, 4} yields {2, 4}.
 -- Delete function
 del :: Eq a => a -> Bag a -> Bag a
-del _ [] = []  -- If the bag is empty, return an empty bag
+del _ [] = []  -- base case: empty bag; nothing to delete
 del x ((y, count):ys)
-  | x == y = if count > 1 then (y, count - 1) : ys else ys  -- If the element is found, decrement the count or remove if count is 1
-  | otherwise = (y, count) : del x ys  -- Otherwise, continue searching in the rest of the bag
+  | x == y = if count > 1 then (y, count - 1) : ys else ys  -- If more than one of the target items exissts in the bag then decrement count, else remove element
+  | otherwise = (y, count) : del x ys  -- else continue searching in the rest of the bag
   
 -- (c) Define a function bag that takes a list of values and produces a multiset representation.
 bag :: Eq a => [a] -> Bag a
-bag xs = foldl (flip ins) [] xs
+bag [] = []
+bag (x:xs) = ins x (bag xs)
 
 -- (d) Define a function subbag that determines whether or not its first argument bag is contained in the second.
+
+itemBagCount :: Eq a => a -> Bag a -> Int
+itemBagCount x bag = sum [n | (y, n) <- bag, y == x]
+
 subbag :: Eq a => Bag a -> Bag a -> Bool
-subbag [] _ = True
-subbag _ [] = False
-subbag ((x, count_x): xs) ys = case lookup x ys of
-    Just count_y -> count_x <= count_y && subbag xs ys
-    Nothing -> False
+subbag [] _ = True    -- empty bag is always a subbag of any bag
+subbag _ [] = False   -- otherwise something will never be a subbag of an empy bag
+subbag ((x, n):xs) ys = n <= itemBagCount x ys && subbag xs ys
 
  -- (e) Define a function isSet that tests whether a bag is actually a set, which is the case when each element occurs only once.
 isSet :: Eq a => Bag a -> Bool
-isSet = all (\(_, count) -> count == 1)
+isSet [] = True
+isSet ((_, count):xs) = count == 1 && isSet xs
 
 -- (f) Define a function size that computes the number of elements contained in a bag.
 size :: Bag a -> Int
-size = sum . map snd
-
+size bag = sum [n | (_, n) <- bag]    -- sum up the counts of every item in the bag
 
 ---------------------------------------------------------------------------------------------------
 -- Question 2 - Matrix
