@@ -22,7 +22,7 @@ data Cmd
   = Pen Mode
   | MoveTo Coord
   | Def String Pars Cmd
-  | Call Vals String
+  | Call String Vals
   | Seq Cmd Cmd
   deriving (Show)
 
@@ -55,8 +55,16 @@ vector =
 moveTo x y = MoveTo (Ints (x, y))
 
 step :: Int -> Int -> Cmd
-step x y
-  | x > 1 =
+step 1 1 =
+      seqCmds
+        [ Pen Up,
+          moveTo 1 1,
+          Pen Down,
+          moveTo 0 1,
+          moveTo 0 0,
+          Pen Up
+        ]
+step x y =
       seqCmds
         [ Pen Up,
           moveTo x y,
@@ -65,15 +73,6 @@ step x y
           moveTo (x - 1) (y - 1),
           Pen Up,
           step (x - 1) (y - 1)
-        ]
-  | otherwise =
-      seqCmds
-        [ Pen Up,
-          moveTo x y,
-          Pen Down,
-          moveTo (x - 1) y,
-          moveTo (x - 1) (y - 1),
-          Pen Up
         ]
 
 steps :: Int -> Cmd
