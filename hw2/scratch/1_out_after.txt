@@ -1,0 +1,23 @@
+Seq (Pen Up)
+    (Seq (MoveTo (Ints (4,4)))
+        (Seq (Pen Down)
+            (Seq (MoveTo (Ints (3,4)))
+                (Seq (MoveTo (Ints (3,3)))
+                    (Seq (Pen Up)
+                        (Seq (MoveTo (Ints (3,3)))
+                            (Seq (Pen Down)
+                                (Seq (MoveTo (Ints (2,3)))
+                                    (Seq (MoveTo (Ints (2,2)))
+                                        (Seq (Pen Up)
+                                            (Seq (MoveTo (Ints (2,2)))
+                                                (Seq (Pen Down)
+                                                    (Seq (MoveTo (Ints (1,2)))
+                                                        (Seq (MoveTo (Ints (1,1)))
+                                                            (Seq (Pen Up)
+                                                                (Seq (MoveTo (Ints (1,1)))
+                                                                    (Seq (Pen Down)
+                                                                        (Seq (MoveTo (Ints (0,1)))
+                                                                            (MoveTo (Ints (0,0)))))))))))))))))))))
+
+
+

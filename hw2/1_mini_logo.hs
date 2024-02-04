@@ -13,6 +13,7 @@
 data Mode = Up | Down deriving (Show)
 
 data Coord = Ints (Int, Int) | Names (String, String) deriving (Show)
+type Pos = Int
 
 data Pars = Pars String Pars | Name String deriving (Show)
 
@@ -53,6 +54,8 @@ vector =
 -- on n steps.
 
 moveTo x y = MoveTo (Ints (x, y))
+--moveTo :: Pos -> Pos  -> Cmd
+--moveTo x y = MoveTo x y
 
 step :: Int -> Int -> Cmd
 step 1 1 =
@@ -61,8 +64,7 @@ step 1 1 =
           moveTo 1 1,
           Pen Down,
           moveTo 0 1,
-          moveTo 0 0,
-          Pen Up
+          moveTo 0 0
         ]
 step x y =
       seqCmds
@@ -71,7 +73,6 @@ step x y =
           Pen Down,
           moveTo (x - 1) y,
           moveTo (x - 1) (y - 1),
-          Pen Up,
           step (x - 1) (y - 1)
         ]
 
