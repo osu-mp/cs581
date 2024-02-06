@@ -30,6 +30,10 @@ seqCmds :: [Cmd] -> Cmd
 seqCmds [cmd] = cmd
 seqCmds (cmd : cmds) = Seq cmd (seqCmds cmds)
 
+seqPars :: [Pars] -> Pars
+seqPars [p] = p
+seqPars ((Name s):ps) = Pars s (seqPars ps)
+
 -- part b: Write Mini Logo function `vector`
 -- def vector (x1, y1, x2, y2) pen up ; moveto (x1, y1);
 -- pen down; moveto (x2, y2); pen up
@@ -38,7 +42,7 @@ vector :: Cmd
 vector =
   Def
     "vector"
-    (Pars "x1" (Pars "y1" (Pars "x2" (Name "y2"))))
+    (seqPars [Name "x1", Name "y1", Name "x2", Name "y2"])
     ( seqCmds
         [ Pen Up,
           MoveTo (Names ("x1", "y1")),
