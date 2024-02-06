@@ -19,11 +19,13 @@ type Term = String
 
 data Symbol = NTSymbol NT | TermSymbol Term deriving (Show)
 
-newtype Grammar = Grammar [Prod] deriving (Show)
+newtype RHS = RHS [Symbol] deriving (Show)
 
 data Prod = Prod NT [RHS] deriving (Show)
 
-newtype RHS = RHS [Symbol] deriving (Show)
+newtype Grammar = Grammar [Prod] deriving (Show)
+
+
 
 -- part b: imp
 
