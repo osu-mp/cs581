@@ -10,25 +10,27 @@
 
 -- part a: define the abstract syntax for mini logo as Cmd
 
-data Mode = Up | Down deriving (Show)
-
-data Coord = Ints (Int, Int) | Names (String, String) deriving (Show)
-
 newtype Pars = Pars [String] deriving (Show)
 
 newtype Vals = Vals [Int] deriving (Show)
+
+data Mode
+  = Up
+  | Down
+  deriving (Show)
+
+data Coord
+  = Ints (Int, Int)
+  | Names (String, String)
+  deriving (Show)
 
 data Cmd
   = Pen Mode
   | MoveTo Coord
   | Def String Pars Cmd
   | Call String Vals
-  | Seq Cmd Cmd
+  | Seq [Cmd]
   deriving (Show)
-
-seqCmds :: [Cmd] -> Cmd
-seqCmds [cmd] = cmd
-seqCmds (cmd : cmds) = Seq cmd (seqCmds cmds)
 
 -- part b: Write Mini Logo function `vector`
 -- def vector (x1, y1, x2, y2) pen up ; moveto (x1, y1);
@@ -39,7 +41,7 @@ vector =
   Def
     "vector"
     (Pars ["x1", "y1", "x2", "y2"])
-    ( seqCmds
+    ( Seq
         [ Pen Up,
           MoveTo (Names ("x1", "y1")),
           Pen Down,
@@ -54,27 +56,17 @@ vector =
 
 moveTo x y = MoveTo (Ints (x, y))
 
-step :: Int -> Int -> Cmd
-step 1 1 =
-  seqCmds
-    [ Pen Up,
-      moveTo 1 1,
-      Pen Down,
-      moveTo 0 1,
-      moveTo 0 0
-    ]
+step :: Int -> Int -> [Cmd]
 step x y =
-  seqCmds
-    [ Pen Up,
-      moveTo x y,
-      Pen Down,
-      moveTo (x - 1) y,
-      moveTo (x - 1) (y - 1),
-      step (x - 1) (y - 1)
-    ]
+  [ Pen Up,
+    moveTo x y,
+    Pen Down,
+    moveTo (x - 1) y,
+    moveTo (x - 1) (y - 1)
+  ]
 
 steps :: Int -> Cmd
-steps n = step n n
+steps n = Seq $ concat [step x x | x <- [1 .. n]]
 
 main :: IO ()
 main = do
