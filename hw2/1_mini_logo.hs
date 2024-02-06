@@ -13,11 +13,10 @@
 data Mode = Up | Down deriving (Show)
 
 data Coord = Ints (Int, Int) | Names (String, String) deriving (Show)
-type Pos = Int
 
-data Pars = Pars String Pars | Name String deriving (Show)
+newtype Pars = Pars [String] deriving (Show)
 
-data Vals = Vals Int Vals | Int deriving (Show)
+newtype Vals = Vals [Int] deriving (Show)
 
 data Cmd
   = Pen Mode
@@ -31,10 +30,6 @@ seqCmds :: [Cmd] -> Cmd
 seqCmds [cmd] = cmd
 seqCmds (cmd : cmds) = Seq cmd (seqCmds cmds)
 
-seqPars :: [Pars] -> Pars
-seqPars [p] = p
-seqPars ((Name s):ps) = Pars s (seqPars ps)
-
 -- part b: Write Mini Logo function `vector`
 -- def vector (x1, y1, x2, y2) pen up ; moveto (x1, y1);
 -- pen down; moveto (x2, y2); pen up
@@ -43,7 +38,7 @@ vector :: Cmd
 vector =
   Def
     "vector"
-    (seqPars [Name "x1", Name "y1", Name "x2", Name "y2"])
+    (Pars ["x1", "y1", "x2", "y2"])
     ( seqCmds
         [ Pen Up,
           MoveTo (Names ("x1", "y1")),
@@ -58,27 +53,25 @@ vector =
 -- on n steps.
 
 moveTo x y = MoveTo (Ints (x, y))
---moveTo :: Pos -> Pos  -> Cmd
---moveTo x y = MoveTo x y
 
 step :: Int -> Int -> Cmd
 step 1 1 =
-      seqCmds
-        [ Pen Up,
-          moveTo 1 1,
-          Pen Down,
-          moveTo 0 1,
-          moveTo 0 0
-        ]
+  seqCmds
+    [ Pen Up,
+      moveTo 1 1,
+      Pen Down,
+      moveTo 0 1,
+      moveTo 0 0
+    ]
 step x y =
-      seqCmds
-        [ Pen Up,
-          moveTo x y,
-          Pen Down,
-          moveTo (x - 1) y,
-          moveTo (x - 1) (y - 1),
-          step (x - 1) (y - 1)
-        ]
+  seqCmds
+    [ Pen Up,
+      moveTo x y,
+      Pen Down,
+      moveTo (x - 1) y,
+      moveTo (x - 1) (y - 1),
+      step (x - 1) (y - 1)
+    ]
 
 steps :: Int -> Cmd
 steps n = step n n
