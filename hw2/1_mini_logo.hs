@@ -66,7 +66,7 @@ step x y =
   ]
 
 steps :: Int -> Cmd
-steps n = Seq $ concat [step x x | x <- [1 .. n]]
+steps n = Seq $ concat [step x x | x <- [1 .. (n + 1)]]
 
 main :: IO ()
 main = do
