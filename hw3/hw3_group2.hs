@@ -1,5 +1,70 @@
 module Hw3_group2 where
 
+-- 1 Imperative language
+type Name = String
+type Val = Int
+data Fun = Succ | Add Name
+data Stmt = Assign Name Int | Apply Fun Name | Twice Stmt
+type Prog = [Stmt]
+type State = [(Name, Val)]
+
+semStmt :: Stmt -> State -> State
+semStmt (Assign n x) st      = (n, x):st
+semStmt (Twice s)    st      = semStmt s (semStmt s st)
+semStmt (Apply Succ n)    st = (n, (getVal n st) + 1):(removeVar n st)
+semStmt (Apply (Add v) n) st = (n, ((getVal v st) + (getVal n st))):(removeVar n st)
+
+getVal:: Name -> State -> Val
+getVal n s = head ([i | (w,i) <- s, n==w] ++ [0])
+
+removeVar :: Name -> State -> State
+removeVar n s = ([(w, i) | (w,i) <- s, n/=w])
+
+semProg :: Prog -> State
+semProg [] = []
+semProg xs = semP xs []
+
+semP:: Prog -> State -> State
+semP []    s = s
+semP(x:xs) s = semP xs (semStmt x s)
+
+-- 2 Mini Logo
+
+data Cmd
+  = Pen Mode
+  | MoveTo Int Int
+  | Sequ Cmd Cmd
+  deriving (Show)
+
+data Mode = Up | Down deriving (Show)
+
+type MiniState = (Mode, Int, Int)
+
+type Line = (Int, Int, Int, Int)
+
+type Lines = [Line]
+
+semL :: Cmd -> MiniState -> (MiniState, Lines)
+semL (Pen m) (_, x, y) = ((m, x, y), [])
+semL (MoveTo a b) (Down, x, y) = ((Down, a, b), [(x, y, a, b)])
+semL (MoveTo a b) (Up, x, y) = ((Up, x, y), [])
+semL (Sequ c1 c2) s0 =
+  let (s1, lines1) = semL c1 s0
+      (s2, lines2) = semL c2 s1
+   in (s2, lines1 ++ lines2)
+
+run :: Cmd -> Lines
+run c = snd (semL c (Up, 0, 0))
+
+sampleProg =
+  Pen Down
+    `Sequ` MoveTo 1 1
+    `Sequ` MoveTo 0 1
+    `Sequ` MoveTo 0 0
+    `Sequ` Pen Up
+    `Sequ` MoveTo 50 50
+
+
 -- 3 Stack language
 
 -- abstract syntax and supported operations
