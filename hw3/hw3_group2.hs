@@ -17,12 +17,10 @@ semOp :: Op -> Stack -> Result Stack
 semOp (LD x) stack = Success (x : stack)
 
 -- add the first 2 elements on the stack or error if fewer than 2 elements present
-semOp ADD [] = Fail ("Error: empty stack, cannot add") 
 semOp ADD (x:y:stack) = Success (x + y : stack)
 semOp ADD _ = Fail ("Error: ADD requires at least 2 elements on stack") 
 
 -- swap first 2 elements or produce error if fewer than 2 elements
-semOp SWAP [] = Fail ("Error: swap requires 2 elements on stack")
 semOp SWAP (x:y:stack) = Success (y : x: stack)
 semOp SWAP _ = Fail ("Error: SWAP requires at least 2 elements on stack")
 
