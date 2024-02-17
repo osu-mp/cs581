@@ -6,25 +6,25 @@ type Val = Int
 data Fun = Succ | Add Name
 data Stmt = Assign Name Int | Apply Fun Name | Twice Stmt
 type Prog = [Stmt]
-type State = [(Name, Val)]
+type ImpState = [(Name, Val)]
 
-semStmt :: Stmt -> State -> State
+semStmt :: Stmt -> ImpState -> ImpState
 semStmt (Assign n x) st      = (n, x):st
 semStmt (Twice s)    st      = semStmt s (semStmt s st)
 semStmt (Apply Succ n)    st = (n, (getVal n st) + 1):(removeVar n st)
 semStmt (Apply (Add v) n) st = (n, ((getVal v st) + (getVal n st))):(removeVar n st)
 
-getVal:: Name -> State -> Val
+getVal:: Name -> ImpState -> Val
 getVal n s = head ([i | (w,i) <- s, n==w] ++ [0])
 
-removeVar :: Name -> State -> State
+removeVar :: Name -> ImpState -> ImpState
 removeVar n s = ([(w, i) | (w,i) <- s, n/=w])
 
-semProg :: Prog -> State
+semProg :: Prog -> ImpState
 semProg [] = []
 semProg xs = semP xs []
 
-semP:: Prog -> State -> State
+semP:: Prog -> ImpState -> ImpState
 semP []    s = s
 semP(x:xs) s = semP xs (semStmt x s)
 
@@ -38,13 +38,13 @@ data Cmd
 
 data Mode = Up | Down deriving (Show)
 
-type MiniState = (Mode, Int, Int)
+type State = (Mode, Int, Int)
 
 type Line = (Int, Int, Int, Int)
 
 type Lines = [Line]
 
-semL :: Cmd -> MiniState -> (MiniState, Lines)
+semL :: Cmd -> State -> (State, Lines)
 semL (Pen m) (_, x, y) = ((m, x, y), [])
 semL (MoveTo a b) (Down, x, y) = ((Down, a, b), [(x, y, a, b)])
 semL (MoveTo a b) (Up, x, y) = ((Up, x, y), [])
